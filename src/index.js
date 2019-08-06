@@ -1,12 +1,27 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./App";
+import * as serviceWorker from "./serviceWorker";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App hasUpdate={false} />, document.getElementById("root"));
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
+let ogSrc;
+
+setInterval(() => {
+  fetch("/asset-manifest.json").then(response => {
+    response.json().then(function(data) {
+      const src = data.files["main.js"];
+      if (ogSrc == null) {
+        ogSrc = src;
+      } else if (ogSrc !== src) {
+        ReactDOM.render(
+          <App hasUpdate={true} />,
+          document.getElementById("root")
+        );
+      }
+    });
+  });
+}, 5000);
+
 serviceWorker.unregister();
